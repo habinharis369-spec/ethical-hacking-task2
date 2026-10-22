@@ -1,0 +1,7 @@
+﻿ID,Component,Observation / evidence,Risk hypothesis,Status,Priority
+A01,HTTP response headers,HTTP 200; Access-Control-Allow-Origin: *; X-Content-Type-Options: nosniff; X-Frame-Options: SAMEORIGIN; Feature-Policy: payment 'self'; X-Recruiting: /#/jobs,Wildcard CORS may be broader than needed; verify intended policy on specific endpoints,Initial observation recorded; endpoint review pending,Medium for follow-up; not a confirmed finding
+A02,Product search,"Search term 'apple' returned Apple Juice, Apple Pomace, and Pineapple Juice",Input handling and result rendering could be reviewed if justified by further evidence,Normal behavior observed; no vulnerability demonstrated,Low / informational
+A03,Product listing,"Product cards, names, prices, and Add to Basket controls visible in browser",Review ordinary product and basket behavior within scope,Visible UI observed; behavior pending,Pending
+A04,Account menu,Account entry point visible in top navigation,Authentication-related routes may require access-control review in authorised lab,Not tested,Pending
+A05,Basket,Basket icon visible; count displayed as 0 in screenshot,Review input validation and state updates using normal test actions,Visible UI observed; behavior pending,Pending
+A06,Application routes / requests,Network tab and route/request list not yet provided,Identify application endpoints and their purpose without collecting tokens or personal data,Pending,Pending

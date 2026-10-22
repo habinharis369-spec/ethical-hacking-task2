@@ -1,0 +1,20 @@
+Command:
+curl.exe -I http://127.0.0.1:3000
+
+Observed output:
+HTTP/1.1 200 OK
+Access-Control-Allow-Origin: *
+X-Content-Type-Options: nosniff
+X-Frame-Options: SAMEORIGIN
+Feature-Policy: payment 'self'
+X-Recruiting: /#/jobs
+Accept-Ranges: bytes
+Cache-Control: public, max-age=0
+Last-Modified: Thu, 22 Oct 2026 14:01:44 GMT
+ETag: W/"2700-1a163eaf2e4"
+Content-Type: text/html; charset=UTF-8
+Content-Length: 9984
+Vary: Accept-Encoding
+Date: Thu, 22 Oct 2026 15:35:48 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
