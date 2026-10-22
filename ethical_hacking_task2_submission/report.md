@@ -1,108 +1,289 @@
-# Local Reconnaissance and Attack Surface Map
 
-**Track:** Ethical Hacking  
-**Level:** Beginner-friendly  
-**Learner:** [Enter your name]  
-**Date:** 22 October 2026 (edit if needed)  
-**Testing window:** [Enter start time and end time, local time]
+# Ethical Hacking Task 2
+## Local Reconnaissance and Attack Surface Map
 
-## 1. Scope and authorisation
+**Project:** OWASP Juice Shop Security Assessment  
+**Assessment Type:** Initial Web Application Reconnaissance  
+**Tester:**  HABIN HARIS
+**Target URL:** `http://127.0.0.1:3000`  
+**Environment:** Localhost / authorised isolated lab  
+**Assessment Date:** 22 October 2026  
 
-- **Target:** `http://127.0.0.1:3000`
+---
+
+## 1. Executive Summary
+
+This report documents an initial reconnaissance exercise performed against a locally running OWASP Juice Shop application. The objective was to identify visible application components, inspect HTTP response headers, observe normal search functionality, and record browser network requests.
+
+The local application responded successfully to an HTTP request. Manual browser inspection confirmed that product search returned matching results for the term `apple`. Chrome Developer Tools was used to observe network requests and inspect the headers of an application-configuration request.
+
+The collected evidence supports an initial attack-surface inventory. However, the testing completed so far does not establish a confirmed security vulnerability. Further authorised verification would be required to assess endpoint access controls, response contents, and the application's cross-origin resource sharing configuration.
+
+## 2. Scope and Rules of Engagement
+
+### 2.1 Authorised Target
+
 - **Application:** OWASP Juice Shop
-- **Environment:** local Docker lab; container previously identified as `juice-shop`
-- **Network boundary:** localhost only
-- **Purpose:** enumerate visible application surfaces and record observations with risk hypotheses.
-- **Out of scope:** public systems/IPs, EdVyro, other students, third-party accounts, denial of service, credential stuffing, phishing, malware, persistence, destructive payloads, and real personal data.
+- **Target:** `http://127.0.0.1:3000`
+- **Network boundary:** Localhost only
+- **Purpose:** Educational security testing and reconnaissance
 
-**Authorisation statement — sign before submission:**  
-“I confirm that the target documented in this report is a local lab that I own or am explicitly authorised to test. I performed only the activities within the stated scope and testing window, and did not intentionally target third-party systems or access real personal data.”
+### 2.2 Permitted Activities
 
-Name: ____________________  
-Signature: ____________________  
-Date: ____________________
+- Manual browser inspection.
+- Low-rate HTTP requests to the local target.
+- Inspection of response headers.
+- Observation of ordinary search behaviour.
+- Inspection of browser network request metadata.
+- Documentation of evidence and potential security risks.
 
-## 2. Methodology
+### 2.3 Out-of-Scope Activities
 
-1. Confirmed the local web application responded at `127.0.0.1:3000`.
-2. Requested HTTP response headers using `curl.exe -I http://127.0.0.1:3000`.
-3. Manually inspected the application’s product listing and navigation.
-4. Entered the ordinary search term `apple` and recorded the returned results.
-5. Further route/network inspection remains pending; no vulnerability is confirmed by the observations below.
+- Public IP addresses and third-party systems.
+- EdVyro or other students' systems and accounts.
+- Denial-of-service testing.
+- Credential stuffing or attacks against real accounts.
+- Phishing, malware, persistence, or destructive payloads.
+- Accessing or publishing real personal information or secrets.
+- Testing outside the authorised scope or testing window.
 
-## 3. Findings
+## 3. Methodology
 
-### F-01 — HTTP response headers observed
+The assessment followed these steps:
 
-**Affected component:** HTTP response from the local application  
-**Evidence:** `evidence/http-head-headers.txt`
+1. Verified local application availability using a command-line HTTP request.
+2. Collected the HTTP response headers.
+3. Inspected the application's product listing and navigation.
+4. Tested the search feature with the ordinary term `apple`.
+5. Opened Chrome Developer Tools and inspected the Network tab.
+6. Recorded visible application request names, status codes, and request types.
+7. Inspected the Headers panel for the application-configuration request.
+8. Recorded observations, potential risks, limitations, and suggested follow-up actions.
 
-Observed response:
-- Status: `HTTP/1.1 200 OK`
-- `Access-Control-Allow-Origin: *`
-- `X-Content-Type-Options: nosniff`
-- `X-Frame-Options: SAMEORIGIN`
-- `Feature-Policy: payment 'self'`
-- `X-Recruiting: /#/jobs`
-- `Content-Type: text/html; charset=UTF-8`
+Testing was limited to the local application and normal, non-destructive interactions.
 
-**Interpretation:** The server responded successfully. `nosniff` and `SAMEORIGIN` are present. The wildcard CORS header is worth checking against specific endpoints and intended cross-origin requirements, but this header alone does not prove a vulnerability. The custom `X-Recruiting` header reveals a jobs-related route; this is an observation, not necessarily a security issue.
+## 4. Evidence Collection
 
-**Impact:** No adverse impact demonstrated during this header check.  
+### 4.1 Local Application Availability
+
+**Command executed:**
+
+```powershell
+curl.exe -I http://127.0.0.1:3000
+```
+
+**Observed result:** `HTTP/1.1 200 OK`
+
+The response included the following headers:
+
+| Header | Observed value |
+|---|---|
+| `Access-Control-Allow-Origin` | `*` |
+| `X-Content-Type-Options` | `nosniff` |
+| `X-Frame-Options` | `SAMEORIGIN` |
+| `Feature-Policy` | `payment 'self'` |
+| `X-Recruiting` | `/#/jobs` |
+| `Content-Type` | `text/html; charset=UTF-8` |
+
+**Interpretation:**
+
+The HTTP 200 response confirms that the local web server responded successfully to the request.
+
+The `X-Content-Type-Options: nosniff` and `X-Frame-Options: SAMEORIGIN` headers were present in the captured response.
+
+The wildcard `Access-Control-Allow-Origin: *` value is an observation that may warrant further review against the application's intended cross-origin access requirements. This header alone does not establish a vulnerability. The custom `X-Recruiting` header exposes a jobs-related route, but this is not necessarily a security issue.
+
+**Evidence file:** `evidence/http-head-headers.txt`
+
+### 4.2 Product Search Test
+
+**Test input:** `apple`
+
+**Observed results:**
+
+| Product | Displayed price |
+|---|---:|
+| Apple Juice (1000ml) | 1.99¤ |
+| Apple Pomace | 0.89¤ |
+| Pineapple Juice (1000ml) | 2.99¤ |
+
+**Result:** The application returned three matching product entries.
+
+**Interpretation:** Normal search functionality worked as expected for the tested input. This test did not demonstrate SQL injection, cross-site scripting, or any other vulnerability.
+
+**Evidence file:** `evidence/browser-observations.md`
+
+### 4.3 Browser Network Inspection
+
+Chrome Developer Tools was used to observe requests generated by the local application.
+
+The following entries were visible in the supplied screenshot:
+
+| Request name | Status | Type |
+|---|---:|---|
+| `application-configuration` | 304 | Fetch |
+| `Quantity/` | 304 | Fetch |
+| `search?q=` | 304 | Fetch |
+| `socket.io/?EIO=4&transport=polling...` | 200 | XHR |
+
+The screenshot did not establish all request methods or full URLs for every entry.
+
+#### Application-Configuration Request
+
+The selected request displayed the following information:
+
+- **Request URL:** `http://127.0.0.1:3000/rest/admin/application-configuration`
+- **Request Method:** `GET`
+- **Status Code:** `304 Not Modified`
+- **Remote Address:** `127.0.0.1:3000`
+- **Referrer Policy:** `strict-origin-when-cross-origin`
+
+**Interpretation:**
+
+The browser requested an application-configuration endpoint. The `304 Not Modified` response is associated with HTTP caching and is not itself a vulnerability.
+
+Although the URL contains an `/admin/` path segment, the path name alone does not prove an access-control weakness. The response contents and the endpoint's intended permissions were not fully verified in the supplied evidence.
+
+**Evidence files:**
+- `evidence/browser-observations.md`
+- `evidence/network-observations.csv`
+
+## 5. Findings and Risk Assessment
+
+### Finding F-01: HTTP Response Headers Collected
+
+**Affected component:** Local web server HTTP response
+
+**Evidence:** Initial HTTP request returned `200 OK` and included the headers documented in Section 4.1.
+
+**Potential risk:** The wildcard CORS header should be reviewed against intended cross-origin requirements.
+
+**Impact demonstrated:** No adverse impact demonstrated.
+
 **Reproducible steps:**
-1. Start the local Juice Shop lab.
+
+1. Start the local OWASP Juice Shop application.
 2. Open PowerShell.
 3. Run `curl.exe -I http://127.0.0.1:3000`.
-4. Compare the returned headers with the evidence file.
+4. Compare the response with the saved evidence.
 
-**Remediation:** No change is justified solely from this initial observation. Review CORS configuration against the application’s intended cross-origin access and restrict it where appropriate.  
-**Retest result:** Initial header capture returned HTTP 200. Further endpoint-specific verification is pending.  
+**Remediation recommendation:** Review the CORS policy against the application's actual requirements. Restrict allowed origins where appropriate. Do not change the configuration solely because a wildcard header was observed; first verify the intended behaviour and affected endpoints.
+
+**Retest result:** Initial header collection completed. Endpoint-specific CORS verification remains pending.
+
 **Severity:** Undetermined; no confirmed vulnerability.
 
-### F-02 — Product search returns matching products
+### Finding F-02: Normal Product Search Behaviour
 
-**Affected component:** Product search and result display  
-**Evidence:** Learner entered the ordinary term `apple`; the app returned:
-- Apple Juice (1000ml) — `1.99¤`
-- Apple Pomace — `0.89¤`
-- Pineapple Juice (1000ml) — `2.99¤`
+**Affected component:** Product search interface
 
-**Impact:** No adverse impact demonstrated. The normal search behavior worked.  
+**Evidence:** Searching for `apple` returned three matching products.
+
+**Potential risk:** Search input handling and result rendering could be investigated further if additional evidence indicates a weakness.
+
+**Impact demonstrated:** No adverse impact demonstrated.
+
 **Reproducible steps:**
+
 1. Open `http://127.0.0.1:3000`.
-2. Open the search bar using the magnifying-glass icon.
+2. Open the search interface.
 3. Enter `apple`.
-4. Observe the listed matching products.
+4. Observe the returned product list.
 
-**Risk hypothesis:** Input handling and result rendering may be reviewed if later evidence suggests a weakness. The normal search result does not demonstrate injection or another vulnerability.  
-**Remediation:** None indicated by this observation alone.  
-**Retest result:** Normal search returned three matching products.
+**Remediation recommendation:** No specific remediation is indicated by this normal search test.
 
-## 4. Attack-surface inventory
+**Retest result:** Normal search returned matching products.
 
-See `inventory.csv`. Current coverage includes the HTTP response, product search, product listing, account entry point, basket controls, and application routes. Items marked “pending” have not been technically verified.
+**Severity:** Informational observation; no vulnerability demonstrated.
 
-## 5. Limitations
+### Finding F-03: Application Network Requests Observed
 
-- This is an initial reconnaissance report, not a full security assessment.
-- The browser Network-tab inspection and additional route/service enumeration are pending. Follow `evidence/network-tab-checklist.md` and add only actual observations.
-- No vulnerability should be reported as confirmed without reproducible supporting evidence.
-- No real user data or credentials were intentionally accessed.
+**Affected component:** Browser-to-application requests
 
-## 6. Retest summary
+**Evidence:** Chrome Developer Tools showed application-configuration, quantity-related, search-related, and Socket.IO polling requests.
 
-- Local target availability: Passed (HTTP 200 observed).
-- Header collection: Completed.
-- Normal product search: Passed.
-- Endpoint-specific CORS verification: Pending.
-- Network/request inventory: Pending.
-- Account and basket behavior: Not tested beyond visible UI observation.
+**Potential risk:** The configuration endpoint's response contents and access controls may warrant review within the authorised lab.
 
-## 7. Submission checklist
+**Impact demonstrated:** No unauthorised access or data exposure was established by the supplied evidence.
 
-- [ ] Replace learner name placeholder.
-- [ ] Fill in the testing window.
-- [ ] Sign the authorisation statement.
-- [ ] Add a redacted Network-tab screenshot or request notes.
-- [ ] Review and update pending items using actual observations.
-- [ ] Upload the package to a repository/folder and submit one viewable link.
+**Reproducible steps:**
+
+1. Open the local application in Chrome.
+2. Press `F12`.
+3. Select the Network tab.
+4. Reload the page.
+5. Select the `application-configuration` request.
+6. Inspect the Headers panel.
+
+**Remediation recommendation:** Verify that the endpoint returns only information intended for the requesting user and that appropriate access controls are enforced.
+
+**Retest result:** Initial request metadata was recorded. Response-body review and access-control verification remain pending.
+
+**Severity:** Undetermined; no confirmed vulnerability.
+
+## 6. Attack-Surface Inventory
+
+| Component | Observation | Verification status |
+|---|---|---|
+| HTTP service | HTTP 200 response observed | Initial check completed |
+| Response headers | Security and CORS-related headers recorded | Initial collection completed |
+| Product listing | Product cards and prices visible | Visual observation |
+| Product search | Normal search returned matching products | Basic test completed |
+| Application configuration | GET request with 304 response observed | Metadata recorded |
+| Quantity-related request | Request row visible | Partial metadata |
+| Search request | Request row visible | Partial metadata |
+| Socket.IO polling | Request row with 200 status visible | Partial metadata |
+| Account interface | Account menu visible | Not tested further |
+| Basket interface | Basket control visible | Not tested further |
+
+## 7. Remediation and Follow-Up Plan
+
+The following activities are recommended for future work within the authorised local lab:
+
+1. Review the CORS policy on relevant endpoints and compare it with intended application behaviour.
+2. Review the application-configuration response to determine what information it contains.
+3. Verify endpoint access controls using only authorised test conditions.
+4. Record request methods, status codes, and response types for additional relevant routes.
+5. Investigate any suspected weakness only when there is a clear test objective and a safe, reproducible method.
+6. Document confirmed issues with evidence, impact, reproducible steps, remediation, and retest results.
+
+No remediation should be presented as completed unless the change has actually been made and verified.
+
+## 8. Limitations
+
+- This was an initial reconnaissance exercise, not a comprehensive penetration test.
+- Only the evidence supplied from the local browser and command-line tests is documented.
+- The full set of application routes was not enumerated.
+- The configuration response body was not verified in the supplied evidence.
+- Endpoint-specific CORS behaviour and access controls remain unverified.
+- No confirmed vulnerability was demonstrated by the completed tests.
+- No real personal data or credentials were intentionally accessed.
+
+## 9. Retest Summary
+
+| Test | Result |
+|---|---|
+| Local application availability | Passed |
+| HTTP response header collection | Completed |
+| Normal product search | Passed |
+| Initial Network-tab inspection | Completed |
+| Configuration request metadata | Recorded |
+| Endpoint-specific CORS review | Pending |
+| Configuration response review | Pending |
+| Access-control verification | Pending |
+| Confirmed vulnerabilities | None demonstrated by current evidence |
+
+## 10. Authorisation Statement
+
+I confirm that the target documented in this report is a local lab that I own or am explicitly authorised to test. I performed only activities within the stated scope and testing window and did not intentionally target third-party systems or access real personal data.
+
+**Name:** HABIN HARIS
+
+
+## 11. Conclusion
+
+The assessment verified that the local OWASP Juice Shop application responded to an HTTP request, documented its initial response headers, confirmed normal product search behaviour, and recorded several browser network requests.
+
+The collected evidence provides a useful starting point for an attack-surface inventory and demonstrates the importance of separating observed behaviour from unverified security hypotheses.
+
+No confirmed vulnerability is claimed in this report. Further authorised testing is required before any potential weakness can be classified, assigned a severity, or reported as an exploitable security issue.
