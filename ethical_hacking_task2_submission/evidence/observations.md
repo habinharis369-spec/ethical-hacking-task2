@@ -14,8 +14,3 @@
   - Apple Pomace, 0.89¤
   - Pineapple Juice (1000ml), 2.99¤
 - Normal search worked; no vulnerability demonstrated.
-
-## Pending
-- Inspect Network tab after refresh.
-- Record request names, methods, statuses, and content types only as needed.
-- Do not include cookies, authorization tokens, session identifiers, or personal data in submitted screenshots.
